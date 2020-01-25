@@ -7,9 +7,9 @@ export default class AddressItem extends Component {
         super(props);
     }
   render() {
-      const {item,key,delete_Address}=this.props;
+      const {item,key,delete_Address,index,edit_Address}=this.props;
     return (
-        <View style={styles.main}>
+        <View style={styles.main} key={key}>
         <View style={styles.icon}>
         <Icon name="md-locate" size={10}/>
         </View>
@@ -19,7 +19,7 @@ export default class AddressItem extends Component {
             <Text style={styles.address}>{`${item.house},${item.landmark},${item.location}`} </Text>
             <View style={styles.button_container}>
                 <TouchableWithoutFeedback onPress={()=>{
-                    this.props.navigation.navigate('Map',{item:item})
+                    this.props.navigation.navigate('Edit',{item:item,index:index,edit_Address:edit_Address})
                 }}>
                     <Text style={styles.button}>EDIT</Text>
                 </TouchableWithoutFeedback>

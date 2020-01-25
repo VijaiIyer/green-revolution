@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Container,Content,Icon,Text} from 'native-base';
-import {TouchableNativeFeedback,View,StyleSheet} from 'react-native';
+import {TouchableNativeFeedback,View,StyleSheet,Alert} from 'react-native';
 
 export default class ButtonFullExample extends Component {
     constructor(props)
@@ -43,7 +43,21 @@ export default class ButtonFullExample extends Component {
             <Text style={styles.text}>Payments</Text>
           </View>
           </TouchableNativeFeedback>
-          <TouchableNativeFeedback >
+          <TouchableNativeFeedback  
+          onPress={()=>{
+                    Alert.alert(
+                     'Logout',
+                     'Are you sure you want to logout?',
+                            [
+                                {
+                                text: 'Cancel',
+                                onPress: () => console.log('Cancel Pressed'),
+                                style: 'cancel',
+                                },
+                                {text: 'Yes', onPress: () => {console.log('Logged Out')}},
+                            ],
+                            {cancelable: true},
+                                );}}>
           <View style={styles.item}>
           <View style={styles.view}><Icon name="ios-power" /></View>
             <Text style={styles.text}>Logout</Text>

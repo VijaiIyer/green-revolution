@@ -23,20 +23,28 @@ export default class AddressScreen extends Component {
         this.state={
           Address_array:Address,
         }
+        this.add_Address = this.add_Address.bind(this);
+        this.edit_Address = this.edit_Address.bind(this);
+        this.delete_Address = this.delete_Address.bind(this);
     }
+    
+    edit_Address=(address,index)=>{
+      let t=this.state.Address_array;
+      t[index]=address;
+      this.setState({Address_array:t});
+      }
+
     add_Address=(address)=>{
       let t=this.state.Address_array;
       t.push(address);
       this.setState({Address_array:t});
     }
-    delete_Address=(address)=>{
+    delete_Address=(add)=>{
       let t=this.state.Address_array;
-      t=t.filter((item)=>{
-        if(item!==address)
-        return false;
-        return true;
+      t=t.filter((item)=>{ 
+        return !(Object.is(add,item));
       });
-      //console.log(t);
+      this.setState({Address_array:[]});
       this.setState({Address_array:t});
     }
 
@@ -57,8 +65,8 @@ export default class AddressScreen extends Component {
         </Header>
         <Content>
         <Text style={styles.section_heading}>Saved Addresses</Text>
-        {this.state.Address_array.map((item,key)=>{
-          return <AddressItem {...props} item={item} key={key} delete_Address={this.delete_Address} />
+        {this.state.Address_array.map((item,index,key)=>{
+          return <AddressItem {...props} item={item} key={key} delete_Address={this.delete_Address} edit_Address={this.edit_Address} index={index} />
         })
         }           
         </Content>

@@ -8,6 +8,7 @@ import PaymentScreen from './src/PaymentScreen';
 import HelpScreen from './src/HelpScreen';
 import HelpDetail from './src/HelpDetail';
 import MapScreen from './src/MapScreen';
+import EditScreen from './src/EditScreen';
 import TempScreen from './src/tempScreen';
 import Temp2Screen from './src/Temp2Screen';
 import { createAppContainer } from 'react-navigation';
@@ -16,6 +17,7 @@ const AppNavigator = createStackNavigator({
   Temp2:Temp2Screen,
   Temp:TempScreen,
   Map : MapScreen,
+  Edit: EditScreen,
   Account: AccountScreen,
   Order : OrderScreen,
   Address: AddressScreen,

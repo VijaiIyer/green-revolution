@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated,Text, View, ActivityIndicator, Button,StyleSheet,Dimensions,TouchableWithoutFeedback,TextInput } from 'react-native';
+import { TouchableNativeFeedback,Animated,Text, View, ActivityIndicator, Button,StyleSheet,Dimensions,TouchableWithoutFeedback,TextInput } from 'react-native';
 import {Icon,Form, Item, Input, Label } from 'native-base';
 import MapView ,{ PROVIDER_GOOGLE }from "react-native-maps";
 import Geolocation from '@react-native-community/geolocation';
@@ -18,6 +18,7 @@ export default class MapScreen extends Component {
         latitudeDelta: 0.001,
         longitudeDelta: 0.001
       },
+      scale_animationValue : [new Animated.Value(1),new Animated.Value(1),new Animated.Value(1)],
       isMapReady: false,
       marginTop: 1,
       userLocation: "",
@@ -27,6 +28,17 @@ export default class MapScreen extends Component {
       name:'',
     };
     Geocoder.init("59c457bd2a254ab79ead4df79b957b1b ");
+  }
+  startScaleAnimation=(index)=>{
+    Animated.timing(this.state.scale_animationValue[index], {
+      toValue : 1.2,
+      duration: 200,
+    }).start(()=>{
+      Animated.timing(this.state.scale_animationValue[index],{
+        toValue : 1,
+        duration : 200
+      }).start();
+    })
   }
  startAnimation=()=>{
     let Value=-200;
@@ -128,6 +140,27 @@ export default class MapScreen extends Component {
         translateY : this.state.animation,
       }]
     }
+    const animatedHome = {
+      transform : [
+        {
+          scale : this.state.scale_animationValue[0]
+        }
+      ]
+     }
+     const animatedWork = {
+      transform : [
+        {
+          scale : this.state.scale_animationValue[1]
+        }
+      ]
+     }
+     const animatedOther = {
+      transform : [
+        {
+          scale : this.state.scale_animationValue[2]
+        }
+      ]
+     }
     if (this.state.loading) {
 
       return (
@@ -177,32 +210,53 @@ export default class MapScreen extends Component {
 
             <Text numberOfLines={2} style={{ fontSize: 14, paddingVertical: 10, borderBottomColor: "silver", borderBottomWidth: 0.5 }}>
               {!this.state.regionChangeProgress ? this.state.userLocation : "Identifying Location..."}</Text>
-              <Form>
+              <Form style={{marginLeft:-15}}>
             <Item floatingLabel last>
-              <Label>House/Flat No.</Label>
+              <Label style={{ fontSize: 12, color: "#999"}}>House/Flat No.</Label>
               <Input 
+                style={{fontSize:14}}
                 value={this.state.house}
                 onChangeText={(value)=>{this.setState({house:value})}}
               />
             </Item>
             <Item floatingLabel last>
-              <Label>Landmark</Label>
-              <TextInput 
+              <Label style={{ fontSize: 12, color: "#999"}}>Landmark</Label>
+              <Input 
+                style={{fontSize:14}}
                 value={this.state.landmark}
-                onChangeText={(text)=>{this.setState({landmark:text})}}
+                onChangeText={(value)=>{this.setState({landmark:value})}}
               />
             </Item>
           </Form>
           <Text style={{ fontSize: 10, color: "#999",marginVertical:10 }}>SAVE AS</Text>
-          <View style={{flexDirection:"row",justifyContent:'space-around',margin:10,}}>
-          <Button title="Home" onPress={()=>{this.setState({name:'Home'})}}/>
-          <Button title="Work" onPress={()=>{this.setState({name:'Work'})}}/>
-          <Button title="Others" onPress={()=>{this.setState({name:'Others'})}}/>
-
+          <View style={{flexDirection:"row",justifyContent:'space-between',margin:10}}>
+          <TouchableWithoutFeedback onPress={()=>{
+            this.startScaleAnimation(0);
+            this.setState({name:'Home'})}}>
+            <Animated.View style={[styles.animatedBox,(this.state.name==='Home')?animatedHome:{scale:1}]}>
+            {(this.state.name==='Home')? <Icon  name="home" style={{color:'black'}}/>: <Icon  name="home" style={{color:'lightgrey'}}/>}
+              <Text style={{textAlignVertical:'center',marginLeft:3}}>Home</Text>
+            </Animated.View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={()=>{
+            this.startScaleAnimation(1);
+            this.setState({name:'Work'});}}>
+            <Animated.View style={[styles.animatedBox,(this.state.name==='Work')?animatedWork:{scale:1}]}>
+              {(this.state.name==='Work')? <Icon  name="briefcase" style={{color:'black'}}/>: <Icon  name="briefcase" style={{color:'lightgrey'}}/>}
+              <Text style={{textAlignVertical:'center',marginLeft:3}}>Work</Text>
+              </Animated.View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={()=>{
+            this.startScaleAnimation(2);
+            this.setState({name:'Other'})}}>
+            <Animated.View style={[styles.animatedBox,(this.state.name==='Other')?animatedOther:{scale:1}]}>
+            {(this.state.name==='Other')? <Icon  name="locate" style={{color:'black'}}/>: <Icon  name="locate" style={{color:'lightgrey'}}/>}
+              <Text style={{textAlignVertical:'center',marginLeft:3}}>Other</Text>
+              </Animated.View>
+          </TouchableWithoutFeedback>
           </View>
             <View style={styles.btnContainer}>
-              <Button
-                title="PICK THIS LOCATION"
+            <TouchableNativeFeedback
                 onPress={()=>{
                   this.props.navigation.state.params.add_Address({
                     name:this.state.name,
@@ -212,7 +266,10 @@ export default class MapScreen extends Component {
                   });
                   this.props.navigation.goBack();}}
               >
-              </Button>
+              <View style={{backgroundColor:'orange',width:'100%',margin:20,alignItems:"center",padding:10,alignSelf:'center'}}>
+              <Text  style={{textAlignVertical:"center",textAlign:'center',fontSize:16,fontWeight:'bold',color:'white'}}>PICK THIS LOCATION</Text>
+              </View>
+              </TouchableNativeFeedback>
             </View>
           </Animated.View>  
         </View>
@@ -267,6 +324,9 @@ const styles = StyleSheet.create({
     },
     btnContainer: {
       width: Dimensions.get("window").width - 20,
-    }
+    },
+    animatedBox:{
+      flexDirection:'row',
+   },
   
   });
