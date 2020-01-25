@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import {Icon} from 'native-base';
-import { View, Text, StyleSheet} from 'react-native'; 
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { TouchableWithoutFeedback, View, Text, StyleSheet,Alert} from 'react-native';
 export default class AddressItem extends Component {
     constructor(props)
     {
         super(props);
     }
   render() {
+      const {item,key,delete_Address}=this.props;
     return (
         <View style={styles.main}>
         <View style={styles.icon}>
@@ -15,15 +15,32 @@ export default class AddressItem extends Component {
         </View>
         <View  style={{borderColor:'#cbcbcb',
     borderBottomWidth:1,paddingBottom:20}}>
-            <Text style={styles.heading}>Home</Text>
-            <Text style={styles.address}>117/2 Vijayniketan,Vallabh Nagar,Indore,Madhya Pradesh,452001,India </Text>
+            <Text style={styles.heading}>{item.name}</Text>
+            <Text style={styles.address}>{`${item.house},${item.landmark},${item.location}`} </Text>
             <View style={styles.button_container}>
-                <TouchableOpacity>
+                <TouchableWithoutFeedback onPress={()=>{
+                    this.props.navigation.navigate('Map',{item:item})
+                }}>
                     <Text style={styles.button}>EDIT</Text>
-                </TouchableOpacity>
-                <TouchableOpacity>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback onPress={()=>{
+                    Alert.alert(
+                     'Delete Address',
+                     'Are you sure you want to delete this address?',
+                            [
+                                {
+                                text: 'No',
+                                onPress: () => console.log('Cancel Pressed'),
+                                style: 'cancel',
+                                },
+                                {text: 'Yes', onPress: () => {
+                                    delete_Address(item)
+                                }},
+                            ],
+                            {cancelable: true},
+                                );}}>
                     <Text style={styles.button}>DELETE</Text>
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
             </View>
         </View>
         </View>
@@ -41,6 +58,7 @@ icon:{
 },
 heading:{fontWeight:'bold',fontSize:16},
 address:{
+    width:'60%',
     marginVertical:10,
     fontSize : 14,
     color:'gray',

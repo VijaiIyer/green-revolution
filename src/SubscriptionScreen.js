@@ -24,9 +24,9 @@ export default class HeaderSpan extends Component {
         </Header>
         <Content>
         <Text style={styles.section_heading}>Past Subscriptions</Text>
-        <OrderItem/>
-        <OrderItem/>
-        <OrderItem/>
+        <OrderItem {...this.props} />
+        <OrderItem {...this.props} />
+        <OrderItem {...this.props} />
         </Content>
       </Container>
     );

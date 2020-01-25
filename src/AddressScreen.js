@@ -2,17 +2,51 @@ import React, { Component } from "react";
 import { Container, Header, Title, Button, Icon, Left, Right, Body, Content } from "native-base";
 import {TouchableNativeFeedback, StyleSheet, Text} from 'react-native';
 import AddressItem from './AddressItem';
+const Address=[
+  {
+    name:'Home',
+    house:'117/2 Vijayniketan',
+    landmark:'Victoria Urbane',
+    location:'Vallabh Nagar,Indore,Madhya Pradesh,452001,India',
+  },
+  {
+    name:'Work',
+    house:'Hvantage Technologies',
+    landmark:'Allen Institute',
+    location:'Indore,Madhya Pradesh,452001,India',
+  },
+];
 export default class AddressScreen extends Component {
     constructor(props)
     {
         super(props);
+        this.state={
+          Address_array:Address,
+        }
     }
+    add_Address=(address)=>{
+      let t=this.state.Address_array;
+      t.push(address);
+      this.setState({Address_array:t});
+    }
+    delete_Address=(address)=>{
+      let t=this.state.Address_array;
+      t=t.filter((item)=>{
+        if(item!==address)
+        return false;
+        return true;
+      });
+      //console.log(t);
+      this.setState({Address_array:t});
+    }
+
   render(){
+    const props=this.props;
        return (<Container>
           <Header>
           <Left>
             <Button transparent
-            onPress={()=>{this.props.navigation.goBack();}}>
+            onPress={()=>{props.navigation.goBack();}}>
               <Icon name="arrow-back" />
             </Button>
           </Left>
@@ -23,10 +57,12 @@ export default class AddressScreen extends Component {
         </Header>
         <Content>
         <Text style={styles.section_heading}>Saved Addresses</Text>
-       <AddressItem/>
-       <AddressItem/>            
+        {this.state.Address_array.map((item,key)=>{
+          return <AddressItem {...props} item={item} key={key} delete_Address={this.delete_Address} />
+        })
+        }           
         </Content>
-        <TouchableNativeFeedback onPress={()=>{this.props.navigation.navigate('Map')}}>
+        <TouchableNativeFeedback onPress={()=>{this.props.navigation.navigate('Map',{add_Address:this.add_Address})}}>
             <Text style={styles.button}>ADD NEW ADDRESSES</Text>
         </TouchableNativeFeedback>
       </Container>

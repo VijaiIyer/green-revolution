@@ -7,7 +7,7 @@ export default class OrderItem extends Component{
     }
    render(){
        return (
-           <TouchableNativeFeedback>
+           <TouchableNativeFeedback onPress={()=>this.props.navigation.navigate('Detail')}>
            <View style={styles.main}>
            <View style={{flexDirection:'row'}}>
            <Icon name="ios-card"/>

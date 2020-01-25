@@ -129,27 +129,16 @@ export default class MapScreen extends Component {
       }]
     }
     if (this.state.loading) {
-
       return (
-
         <View style={styles.spinnerView}>
-
           <ActivityIndicator size="large" color="#0000ff" />
-
         </View>
-
       );
-
     } else {
-
       return (
-
         <View style={styles.container}>
-
           <Animated.View style={[styles.mapSection,transformStyle]}>
-
             {!!this.state.region.latitude && !!this.state.region.longitude &&
-
               <MapView
                 provider={PROVIDER_GOOGLE} // remove if not using Google Maps
                 style={{ ...styles.map, marginTop: this.state.marginTop }}

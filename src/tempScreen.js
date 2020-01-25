@@ -1,132 +1,182 @@
-import React, {Component} from 'react';
-import { StyleSheet, View, TouchableWithoutFeedback, Animated,Text ,Dimensions,Button} from 'react-native';
-import {Form, Item, Input, Label } from 'native-base';
-export default class App extends Component {
- 
-  constructor(){
-    super();
-    this.state={
-      animation : new Animated.Value(0),
-      start:true,
-    }
+import React, {Component} from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
+import MapView, {
+  Marker,
+  AnimatedRegion,
+  Polyline,
+  PROVIDER_GOOGLE
+} from "react-native-maps";
+import Geolocation from '@react-native-community/geolocation';
+import haversine from "haversine";
+
+var LATITUDE = 23.95539;
+var LONGITUDE = 78.07513;
+const LATITUDE_DELTA = 0.009;
+const LONGITUDE_DELTA = 0.009;
+class AnimatedMarkers extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      latitude: LATITUDE,
+      longitude: LONGITUDE,
+      routeCoordinates: [],
+      distanceTravelled: 0,
+      prevLatLng: {},
+      coordinate: new AnimatedRegion({
+        latitude: LATITUDE,
+        longitude: LONGITUDE,
+        latitudeDelta: 0,
+        longitudeDelta: 0
+      })
+    };
   }
- toggle_state=()=>{
-     console.log("toggled.....");
-     this.startAnimation();
- }
-  startAnimation=()=>{
-      if(this.state.start)
+  componentDidMount() {
+    const { coordinate } = this.state;
+    Geolocation.getCurrentPosition(
+      (position) => {
+        this.setState({
+          latitude:position.coords.latitude,
+          longitude:position.coords.longitude,
+          coordinate: new AnimatedRegion({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            latitudeDelta: 0,
+            longitudeDelta: 0
+          })
+        });
+          LATITUDE=position.coords.latitude;
+          LONGITUDE=position.coords.longitude;
+      },
+      (error) => {
+        alert(error);
+      },
+      { enableHighAccuracy: true, timeout: 1000, maximumAge: 500 },
+    );
+
+    this.watchID = Geolocation.watchPosition(
+      position => {
+        const { routeCoordinates, distanceTravelled } = this.state;
+        const { latitude, longitude } = position.coords;
+
+        const newCoordinate = {
+          latitude,
+          longitude
+        };
+
+        if (Platform.OS === "android") {
+          if (this.marker) {
+            this.marker._component.animateMarkerToCoordinate(
+              newCoordinate,
+              500
+            );
+          }
+        } else {
+          coordinate.timing(newCoordinate).start();
+        }
+
+        this.setState({
+          latitude,
+          longitude,
+          routeCoordinates: routeCoordinates.concat([newCoordinate]),
+          distanceTravelled:
+            distanceTravelled + this.calcDistance(newCoordinate),
+          prevLatLng: newCoordinate
+        });
+      },
+      error => console.log(error),
       {
-        console.log("start -up");
-      Animated.timing(this.state.animation,{
-        toValue : -200,
-        duration : 1000
-      }).start(()=>{
-        this.setState({start:!this.state.start});
-        //this.state.animation.setValue(0);
-        //If you remove above line then it will stop the animation at toValue point
-      });
-    }
-    else
-    {console.log("start down");
-        Animated.timing(this.state.animation,{
-            toValue : 0,
-            duration : 1000
-          }).start(()=>{
-            this.setState({start:!this.state.start});
-            //this.state.animation.setValue(0);
-            //If you remove above line then it will stop the animation at toValue point
-          });
-    }
-
- 
-  }
- 
-  render() {
-    const transformStyle ={
-      transform : [{ 
-        translateY : this.state.animation,
-      }]
-    }
- 
-    return (
-         <TouchableWithoutFeedback onPress={()=>{
-             console.log("pressed");
-             this.toggle_state();}}>
-            <View style={styles.MainContainer}>
-
-           <Animated.View  style={[styles.detailSection,transformStyle]}>
-            <Text style={{ fontSize: 16, fontWeight: "bold", fontFamily: "roboto", marginBottom: 20 }}>Set Delivery Location</Text>
-            <Text style={{ fontSize: 10, color: "#999" }}>LOCATION</Text>
-
-            <Text numberOfLines={2} style={{ fontSize: 14, paddingVertical: 10, borderBottomColor: "silver", borderBottomWidth: 0.5 }}>
-              {!this.state.regionChangeProgress ? this.state.userLocation : "Identifying Location..."}</Text>
-              <Form>
-                <Item floatingLabel>
-              <Label>Area</Label>
-              <Input />
-            </Item>
-            <Item floatingLabel last>
-              <Label>House/Flat No.</Label>
-              <Input />
-            </Item>
-            <Item floatingLabel last>
-              <Label>Landmark</Label>
-              <Input />
-            </Item>
-          </Form>
-          <Text style={{ fontSize: 10, color: "#999" }}>SAVE AS</Text>
-          <View style={{flexDirection:"row",justifyContent:'space-around',margin:10,}}>
-          <Button title="Home"/>
-          <Button title="Work"/>
-          <Button title="Others"/>
-
-          </View>
-            <View style={styles.btnContainer}>
-              <Button
-                title="PICK THIS LOCATION"
-                // disabled={this.state.regionChangeProgress}
-                onPress={()=>{this.props.navigation.goBack()}}
-                // onPress={this.onLocationSelect}
-              >
-              </Button>
-            </View>
-          </Animated.View>  
-          </View>
-         </TouchableWithoutFeedback>  
- 
-        
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 1000,
+        distanceFilter: 10
+      }
     );
   }
-};
- 
+
+  componentWillUnmount() {
+    Geolocation.clearWatch(this.watchID);
+  }
+
+  getMapRegion = () => ({
+    latitude: this.state.latitude,
+    longitude: this.state.longitude,
+    latitudeDelta: LATITUDE_DELTA,
+    longitudeDelta: LONGITUDE_DELTA
+  });
+
+  calcDistance = newLatLng => {
+    const { prevLatLng } = this.state;
+    return haversine(prevLatLng, newLatLng) || 0;
+  };
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <MapView
+          style={styles.map}
+          provider={PROVIDER_GOOGLE}
+          showsUserLocation={true}
+          followUserLocation={true}
+          loadingEnabled={true}
+          region={this.getMapRegion()}
+        >
+          <Polyline coordinates={this.state.routeCoordinates} strokeWidth={5} />
+          <Marker.Animated
+            ref={marker => {
+              this.marker = marker;
+            }}
+            coordinate={this.state.coordinate}
+          />
+        </MapView>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={[styles.bubble, styles.button]}>
+            <Text style={styles.bottomBarContent}>
+              {parseFloat(this.state.distanceTravelled).toFixed(2)} km
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
-  MainContainer: {
+  container: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "flex-end",
+    alignItems: "center"
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject
+  },
+  bubble: {
     flex: 1,
-    alignItems : 'center',
+    backgroundColor: "rgba(255,255,255,0.7)",
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 20
   },
-  animatedBox:{
-     width : 190,
-     height: 190,
-     position:'absolute',
-     bottom:-100,
-     backgroundColor : ('#2E7D32')
+  latlng: {
+    width: 200,
+    alignItems: "stretch"
   },
-  detailSection: {
-     flex:1,
-     backgroundColor: "#fff",
-     padding: 10,
-     justifyContent: "flex-start",
-     position:'absolute',
-     bottom:-200,
-   },
-   spinnerView: {
-     flex: 1,
-     justifyContent: "center",
-     alignItems: "center"
-   },
-   btnContainer: {
-     width: Dimensions.get("window").width - 20,
-   }
- 
+  button: {
+    width: 80,
+    paddingHorizontal: 12,
+    alignItems: "center",
+    marginHorizontal: 10
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    marginVertical: 20,
+    backgroundColor: "transparent"
+  }
 });
+
+export default AnimatedMarkers;

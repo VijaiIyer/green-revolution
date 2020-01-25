@@ -9,9 +9,11 @@ import HelpScreen from './src/HelpScreen';
 import HelpDetail from './src/HelpDetail';
 import MapScreen from './src/MapScreen';
 import TempScreen from './src/tempScreen';
+import Temp2Screen from './src/Temp2Screen';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 const AppNavigator = createStackNavigator({
+  Temp2:Temp2Screen,
   Temp:TempScreen,
   Map : MapScreen,
   Account: AccountScreen,
@@ -24,7 +26,7 @@ const AppNavigator = createStackNavigator({
   HelpDetail:HelpDetail,
   },
 {
-  initialRouteName: 'Map',
+  initialRouteName: 'Account',
   defaultNavigationOptions: {
     headerShown:false,
   },

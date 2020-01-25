@@ -10,10 +10,13 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@mapbox/polyline": "^1.1.0",
     "@react-native-community/cli-platform-android": "^3.0.3",
     "@react-native-community/cli-platform-ios": "^3.0.0",
     "@react-native-community/geolocation": "^2.0.2",
     "@react-native-community/masked-view": "^0.1.5",
+    "axios": "^0.19.1",
+    "haversine": "^1.1.1",
     "native-base": "^2.13.8",
     "react": "16.9.0",
     "react-native": "0.61.5",
