@@ -5,6 +5,7 @@ import OrderItem from './OrderItem';
 export default class HeaderSpan extends Component {
     constructor(props)
     {
+        this.scrollYAnimatedValue = new Animated.Value(0);
         super(props);
     }
   render() {
