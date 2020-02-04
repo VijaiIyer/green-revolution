@@ -34,7 +34,7 @@ const AppNavigator = createStackNavigator({
   Schedule:Schedule,
   },
 {
-  initialRouteName: 'Schedule',
+  initialRouteName: 'Account',
   defaultNavigationOptions: {
     headerShown:false,
   },
