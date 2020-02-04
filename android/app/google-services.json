@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "654409439050",
+    "firebase_url": "https://greenapp-b2189.firebaseio.com",
+    "project_id": "greenapp-b2189",
+    "storage_bucket": "greenapp-b2189.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:654409439050:android:3b29bd1f1f6664112993b3",
+        "android_client_info": {
+          "package_name": "com.greenapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "654409439050-gle2qgflcl1md92i4venf8e3potljqpt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARtutY54-tAwxY2_XLV3MgaswnwSYWcC8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "654409439050-gle2qgflcl1md92i4venf8e3potljqpt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
