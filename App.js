@@ -1,4 +1,5 @@
-import { AsyncStorage , Alert} from 'react-native';
+import { AsyncStorage , Alert,View} from 'react-native';
+import {Icon} from 'native-base';
 import firebase from 'react-native-firebase';
 import AccountScreen from './src/Screens/AccountScreen';
 import React ,{Component} from 'react'
@@ -14,12 +15,14 @@ import EditScreen from './src/Screens/EditScreen';
 import TempScreen from './src/Screens/tempScreen';
 import Home from './src/Screens/home';
 import Login from './src/Screens/Login';
+import Splash from './src/Screens/Splash';
 import Product from './src/Screens/Product';
 import Schedule from './src/Screens/Schedule';
 import PaytmGateway from './src/Screens/PaytmGateway';
-import { createAppContainer } from 'react-navigation';
+import { createAppContainer ,createSwitchNavigator} from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
-const AppNavigator = createStackNavigator({
+import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
+const AccountStack = createStackNavigator({
   Temp:TempScreen,
   Map : MapScreen,
   Edit: EditScreen,
@@ -31,10 +34,6 @@ const AppNavigator = createStackNavigator({
   Payment: PaymentScreen,
   Help:HelpScreen,
   HelpDetail:HelpDetail,
-  Home:Home,
-  Login:Login,
-  Product:Product,
-  Schedule:Schedule,
   Paytm:PaytmGateway,
   },
 {
@@ -43,7 +42,84 @@ const AppNavigator = createStackNavigator({
     headerShown:false,
   },
 });
-const AppContainer = createAppContainer(AppNavigator);
+const SubscribeStack = createStackNavigator({
+  Home:Home,
+  Login:Login,
+  Product:Product,
+  Schedule:Schedule,
+  },
+{
+  initialRouteName: 'Home',
+  defaultNavigationOptions: {
+    headerShown:false,
+  },
+});
+const TryStack = createStackNavigator({
+  Home:Home,
+  Login:Login,
+  Product:Product,
+  Schedule:Schedule,
+  },
+{
+  initialRouteName: 'Home',
+  defaultNavigationOptions: {
+    headerShown:false,
+  },
+});
+const AppNavigator = createMaterialBottomTabNavigator(  
+  {  
+      Subscribe: { screen: SubscribeStack,  
+          navigationOptions:{  
+              tabBarLabel:'Subscribe',  
+              tabBarIcon: ({ tintColor }) => (  
+                  <View>  
+                      <Icon style={[{color: tintColor}]} size={25} name={'ios-home'}/>  
+                  </View>),  
+          }  
+      },  
+      Try: { screen: TryStack,  
+          navigationOptions:{  
+              tabBarLabel:'TRY',  
+              tabBarIcon: ({ tintColor }) => (  
+                  <View>  
+                      <Icon style={[{color: tintColor}]} size={25} name={'ios-images'}/>  
+                  </View>),  
+              activeColor: '#f60c0d',  
+              inactiveColor: '#f65a22',  
+              barStyle: { backgroundColor: '#f69b31' },  
+          }  
+      },  
+      Account: { screen: AccountStack,  
+          navigationOptions:{  
+              tabBarLabel:'History',  
+              tabBarIcon: ({ tintColor }) => (  
+                  <View>  
+                      <Icon style={[{color: tintColor}]} size={25} name={'ios-person'}/>  
+                  </View>),  
+              activeColor: '#615af6',  
+              inactiveColor: '#46f6d7',  
+              barStyle: { backgroundColor: '#67baf6' },  
+          }  
+      },  
+  },  
+  {  
+    initialRouteName: "Subscribe",  
+    activeColor: '#f0edf6',  
+    inactiveColor: '#226557',  
+    barStyle: { backgroundColor: '#3BAD87' },  
+  },  
+);  
+
+const InitialNavigator = createSwitchNavigator(
+  {
+    Splash: Splash,
+    App: AppNavigator,
+  },
+  {
+    initialRouteName: 'Splash',
+  },
+);
+const AppContainer = createAppContainer(InitialNavigator);
 export default class App extends Component {
   
   

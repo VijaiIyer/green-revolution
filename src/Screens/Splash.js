@@ -2,16 +2,29 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, ImageBackground } from 'react-native';
 
 
+
 export default class Splas extends Component {
+    performTimeConsumingTask = async () => {
+        return new Promise(resolve =>
+          setTimeout(() => {
+            resolve('result');
+          }, 3000),
+        );
+      };
+      async componentDidMount()
+      {
+        const data = await this.performTimeConsumingTask();
+        if (data !== null) {
+          this.props.navigation.navigate('App');
+        }
+      }
   render(){
     return(
       <View style={styles.wrapper}>
-                <ImageBackground source={require('../component/images/b4.png')} style={{width: '100%', height: '100%'}}>
+                <ImageBackground source={require('../../assets/im/b4.png')} style={{width: '100%', height: '100%'}}>
                 
                 <View style={styles.logo}>
-                    <Image style={{ width: 200, height: 201 }} source={require('../component/images/GR_Logo_Black_Short.png')}>
-                        
-
+                    <Image style={{ width: 200, height: 201 }} source={require('../../assets/im/GR_Logo_Black_Short.png')}>
                     </Image>
                 </View>
             
