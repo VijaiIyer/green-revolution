@@ -82,14 +82,14 @@ export default class PaymentScreen extends Component{
           </Text>
         </View>
         </TouchableNativeFeedback>
-        {
+        {/* {
           this.state.displayWebView?
           <WebView source={{uri: `http://172.21.0.1:5000/createCheckSum?OrderID=${1234}&CustomerID=${1}&TaxationAmount=${400}`}}
                   onNavigationStateChange={(navigationState) => {
                               if (navigationState.title == 'true') {
                                 this.props.navigation.navigate('PaymentResponse', { paymentStatus: navigationState.title })}}}/>
           :Alert.alert('Order','Order placed',[{text: 'OK', onPress: () => console.log('OK Pressed')}],{cancelable: false},)
-        }
+        } */}
       </Container>
     );
   }
