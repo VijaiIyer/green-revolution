@@ -1,26 +1,43 @@
 import React, { Component } from 'react';
-import { ImageBackground, ScrollView, View, FlatList,Image,Dimensions} from 'react-native';
+import { ImageBackground, ScrollView, View, FlatList,Image,Dimensions,TouchableNativeFeedback} from 'react-native';
 import { Container,Card, CardItem, Thumbnail, Text,Left, Body} from 'native-base';
 import { SliderBox } from "react-native-image-slider-box";
 import ChooseItem from '../Components/ChooseItem';
+import ScheduleItem from '../Components/PLanFlatlistItem'
 import moment from 'moment';
 import flatListData from '../../../flatListData';
 const flatListData1 = [
   {
       image: require("../../../assets/im/s1.png"),
-      date: "Today, 23 Jan",
+      date: moment().format("YYYY-MM-DD"),
       title: "Paneer Pesto Salad"
   },
   {
+    image: require("../../../assets/im/s1.png"),
+    date: moment().add(1,"days").format("YYYY-MM-DD"),
+    title: "Paneer Pesto Salad"
+  },
+  {
+  image: require("../../../assets/im/s1.png"),
+  date: moment().add(2,"days").format("YYYY-MM-DD"),
+  title: "Paneer Pesto Salad"
+   },
+  {
       image: require("../../../assets/im/s1.png"),
-      date: "Tomorrow, 24 Jan",
+      date: moment().add(3,"days").format("YYYY-MM-DD"),
       title: "Paneer Pesto Salad"
   },
   {
       image:  require("../../../assets/im/s1.png"),
-      date: "Sat, 25 Jan",
+      date: moment().add(4,"days").format("YYYY-MM-DD"),
       title: "Paneer Pesto Salad"
-  }];
+  },
+  {
+    image:  require("../../../assets/im/s1.png"),
+    date: moment().add(5,"days").format("YYYY-MM-DD"),
+    title: "Paneer Pesto Salad"
+}
+];
 
 const PLAN = [
   { day:1,
@@ -61,9 +78,13 @@ class FlatListItem extends Component{
 export default class Product extends Component {
   constructor(props) {
     super(props);
+    let t=moment();
+    console.log(t.format('ddd'));
+    console.log(t.add(1,"days"));
     this.state = {
       selectedDate: new Date(),
       entries:flatListData1,
+      current_index:0,
       images: [
         require('../../../assets/im/s1.png'),
         require('../../../assets/im/s2.png'),
@@ -73,13 +94,23 @@ export default class Product extends Component {
       plans:PLAN
     };
   }
-  scrollToIndex = () => {
-
-    let t=this._calender.getSelectedDate();
-    let randomIndex=t.diff(this.state.selectedDate,'days');
-
-    // this._carousel.snapToItem(randomIndex,true,true);
-   // this.flatListRef.scrollToIndex({animated: true, index: randomIndex});
+  onScrollEnd=(e)=>{
+    let contentOffset = e.nativeEvent.contentOffset;
+    let viewSize = e.nativeEvent.layoutMeasurement;
+    // Divide the horizontal offset by the width of the view to see which page is visible
+    let pageNum = Math.floor(contentOffset.x / viewSize.width);
+    console.log('scrolled to page ', pageNum);
+    this.scrollToIndex_date(pageNum);
+    this.setState({current_index:pageNum});
+  }
+  update_current_index=(index)=>{
+    this.setState({current_index:index});
+  }
+  scrollToIndex_plan = (index) => {
+    this.Plan_ListRef.scrollToIndex({animated: true, index: index});
+  }
+  scrollToIndex_date = (index) => {
+    this.Date_ListRef.scrollToIndex({animated: true, index: index});
   }
   _renderItem({item,index}) {
     return <FlatListItem2 item={item} index={index}/>;
@@ -105,11 +136,45 @@ export default class Product extends Component {
                   </CardItem>
                  </Card>
                
-               <View style={{padding:10}}>
+               <View style={{backgroundColor:'white'}}>
                 <View style={{backgroundColor: '#ffffff',marginTop:10}}>
                   <Text style= {{ fontSize: 22,fontWeight: 'bold'}}> A Sneak Peek Into The Plan</Text>
                   <View style={{height: 3, width: 80,backgroundColor: '#e65100' }}></View>
                 </View>
+                <View style={{marginTop:10}}>
+                <FlatList
+                    horizontal={true}
+                    ref={(ref) => { this.Date_ListRef = ref; }}
+                    pagingEnabled
+                    data={this.state.entries}
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={({item,index})=>{return index}}
+                    renderItem={({ item, index})=>{
+                    return (
+                      <TouchableNativeFeedback onPress={()=>{this.scrollToIndex_plan(index);
+                        this.setState({current_index:index})}}>
+                      <View style={{alignItems:'center',width:60,marginHorizontal:10,marginTop:10,padding:5,backgroundColor:(index===this.state.current_index)?'red':'white',borderRadius:40}}>
+                        <Text style={{fontSize:18,textAlign:'center',textAlignVertical:'center',color:(index===this.state.current_index)?'white':'black'}}>{moment(item.date).format('ddd')}</Text>
+                        <Text style={{fontSize:22,textAlign:'center',textAlignVertical:'center',color:(index===this.state.current_index)?'white':'black'}}>{moment(item.date).format('DD')}</Text> 
+                      </View>
+                      </TouchableNativeFeedback>
+                    );
+                 }}/>
+                 </View>
+                 <View style={{marginTop:20}}>
+                 <FlatList
+                    ref={(ref) => { this.Plan_ListRef = ref; }}
+                    contentContainerStyle={{justifyContent:'center',alignItems:'center'}}
+                    horizontal={true}
+                    pagingEnabled={true}
+                    onMomentumScrollEnd={this.onScrollEnd}
+                    data={this.state.entries}
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={({item,index})=>{return index}}
+                    renderItem={({ item, index})=>{
+                    return ( <ScheduleItem item={item} index={index}/> );
+                 }}/>
+                 </View>
                 </View>
 
                 <View style={{backgroundColor: '#fff',padding:15}}>
