@@ -1,72 +1,216 @@
-import { AsyncStorage , Alert,View} from 'react-native';
+import { AsyncStorage , Alert,View,Animated,Easing} from 'react-native';
+import getSlideFromRightTransition from 'react-navigation-slide-from-right-transition';
 import {Icon} from 'native-base';
 import firebase from 'react-native-firebase';
-import AccountScreen from './src/Screens/AccountScreen';
 import React ,{Component} from 'react'
-import OrderScreen from './src/Screens/OrderScreen';
-import AddressScreen from './src/Screens/AddressScreen';
-import SubscriptionScreen from './src/Screens/SubscriptionScreen';
-import DetailScreen from './src/Screens/DetailScreen';
-import PaymentScreen from './src/Screens/PaymentScreen';
-import HelpScreen from './src/Screens/HelpScreen';
-import HelpDetail from './src/Screens/HelpDetail';
-import MapScreen from './src/Screens/MapScreen';
-import EditScreen from './src/Screens/EditScreen';
-import TempScreen from './src/Screens/tempScreen';
-import Home from './src/Screens/home';
-import Login from './src/Screens/Login';
-import Splash from './src/Screens/Splash';
-import Product from './src/Screens/Product';
-import Schedule from './src/Screens/Schedule';
-import PaytmGateway from './src/Screens/PaytmGateway';
+import RegisterScreen from './src/AuthStack/Screens/RegisterScreen';
+import SplashScreen from './src/AuthStack/Screens/Splash';
+import OtpScreen from './src/AuthStack/Screens/OtpScreen';
+import SUB_HomeScreen from './src/SubscribeStack/Screens/HomeScreen'
+import SUB_ProductScreen from './src/SubscribeStack/Screens/ProductScreen'
+import SUB_SubscriptionScreen from './src/SubscribeStack/Screens/SubscriptionScreen'
+import TRY_HomeScreen from './src/TryStack/Screens/HomeScreen'
+import TRY_SubscriptionScreen from './src/TryStack/Screens/SubscriptionScreen'
+import ACC_AccountScreen from './src/AccountStack/Screens/AccountScreen';
+import ACC_OrderScreen from './src/AccountStack/Screens/OrderScreen';
+import ACC_AddressScreen from './src/AccountStack/Screens/AddressScreen';
+import ACC_SubscriptionScreen from './src/AccountStack/Screens/SubscriptionScreen';
+import ACC_DetailScreen from './src/AccountStack/Screens/DetailScreen';
+import ACC_PaymentScreen from './src/AccountStack/Screens/PaymentScreen';
+import ACC_HelpScreen from './src/AccountStack/Screens/HelpScreen';
+import ACC_HelpDetail from './src/AccountStack/Screens/HelpDetail';
+import ACC_MapScreen from './src/AccountStack/Screens/MapScreen';
+import ACC_EditScreen from './src/AccountStack/Screens/EditScreen';
+import ACC_TempScreen from './src/AccountStack/Screens/tempScreen';
+import ACC_PaytmGateway from './src/AccountStack/Screens/PaytmGateway';
 import { createAppContainer ,createSwitchNavigator} from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
-import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
+import {createBottomTabNavigator} from 'react-navigation-tabs';
 const AccountStack = createStackNavigator({
-  Temp:TempScreen,
-  Map : MapScreen,
-  Edit: EditScreen,
-  Account: AccountScreen,
-  Order : OrderScreen,
-  Address: AddressScreen,
-  Subscription:SubscriptionScreen,
-  Detail: DetailScreen,
-  Payment: PaymentScreen,
-  Help:HelpScreen,
-  HelpDetail:HelpDetail,
-  Paytm:PaytmGateway,
+  Temp:ACC_TempScreen,
+  Map : ACC_MapScreen,
+  Edit: ACC_EditScreen,
+  Account: ACC_AccountScreen,
+  Order : ACC_OrderScreen,
+  Address: ACC_AddressScreen,
+  Subscription:ACC_SubscriptionScreen,
+  Detail: ACC_DetailScreen,
+  Payment: ACC_PaymentScreen,
+  Help:ACC_HelpScreen,
+  HelpDetail:ACC_HelpDetail,
+  Paytm:ACC_PaytmGateway,
   },
-{
-  initialRouteName: 'Account',
-  defaultNavigationOptions: {
-    headerShown:false,
-  },
-});
+  {  initialRouteName: 'Account',
+     gesturesEnabled:true,
+     headerMode:"none",
+     mode: 'card',
+     defaultNavigationOptions: {
+     transitionConfig:getSlideFromRightTransition,
+     gesturesEnabled: true,
+    },
+    transitionConfig: () => ({
+      transitionSpec: {
+        duration: 300,
+        easing: Easing.out(Easing.poly(4)),
+        timing: Animated.timing,
+      },
+      screenInterpolator: sceneProps => {
+        const { layout, position, scene } = sceneProps;
+        const { index } = scene;
+  
+        const width = layout.initWidth;
+        const translateX = position.interpolate({
+          inputRange: [index - 1, index, index + 1],
+          outputRange: [width, 0, 0],
+        });
+  
+        const opacity = position.interpolate({
+          inputRange: [index - 1, index - 0.99, index],
+          outputRange: [0, 1, 1],
+        });
+  
+        return { opacity, transform: [{ translateX }] };
+      },
+    }),
+  }
+);
+AccountStack.navigationOptions = ({ navigation }) => {
+  let tabBarVisible = false;
+  let routeName = navigation.state.routes[navigation.state.index].routeName
+  if ( routeName == 'Account' ) {
+      tabBarVisible = true
+  }
+  return {
+      tabBarVisible,
+  }
+}
 const SubscribeStack = createStackNavigator({
-  Home:Home,
-  Login:Login,
-  Product:Product,
-  Schedule:Schedule,
+  Home_sub:SUB_HomeScreen,
+  Product_sub:SUB_ProductScreen,
+  Subscribe_sub:SUB_SubscriptionScreen,
   },
 {
-  initialRouteName: 'Home',
+  initialRouteName: 'Home_sub',
+  gesturesEnabled:true,
   defaultNavigationOptions: {
     headerShown:false,
   },
+  transitionConfig: () => ({
+    transitionSpec: {
+      duration: 300,
+      easing: Easing.out(Easing.poly(4)),
+      timing: Animated.timing,
+    },
+    screenInterpolator: sceneProps => {
+      const { layout, position, scene } = sceneProps;
+      const { index } = scene;
+
+      const width = layout.initWidth;
+      const translateX = position.interpolate({
+        inputRange: [index - 1, index, index + 1],
+        outputRange: [width, 0, 0],
+      });
+
+      const opacity = position.interpolate({
+        inputRange: [index - 1, index - 0.99, index],
+        outputRange: [0, 1, 1],
+      });
+
+      return { opacity, transform: [{ translateX }] };
+    },
+  }),
+});
+SubscribeStack.navigationOptions = ({ navigation }) => {
+  let tabBarVisible = false;
+  let routeName = navigation.state.routes[navigation.state.index].routeName
+  if ( routeName == 'Home_sub' ) {
+      tabBarVisible = true
+  }
+  return {
+      tabBarVisible,
+  }
+}
+const AuthStack = createStackNavigator({
+  Register:RegisterScreen,
+  Splash:SplashScreen,
+  OTP:OtpScreen,
+  },
+{
+  initialRouteName: 'Splash',
+  defaultNavigationOptions: {
+    headerShown:false,
+  },
+  transitionConfig: () => ({
+    transitionSpec: {
+      duration: 300,
+      easing: Easing.out(Easing.poly(4)),
+      timing: Animated.timing,
+    },
+    screenInterpolator: sceneProps => {
+      const { layout, position, scene } = sceneProps;
+      const { index } = scene;
+
+      const width = layout.initWidth;
+      const translateX = position.interpolate({
+        inputRange: [index - 1, index, index + 1],
+        outputRange: [width, 0, 0],
+      });
+
+      const opacity = position.interpolate({
+        inputRange: [index - 1, index - 0.99, index],
+        outputRange: [0, 1, 1],
+      });
+
+      return { opacity, transform: [{ translateX }] };
+    },
+  }),
 });
 const TryStack = createStackNavigator({
-  Home:Home,
-  Login:Login,
-  Product:Product,
-  Schedule:Schedule,
+  Home_try:TRY_HomeScreen,
+  Subscribe_try:TRY_SubscriptionScreen,
   },
 {
-  initialRouteName: 'Home',
+  initialRouteName: 'Home_try',
   defaultNavigationOptions: {
     headerShown:false,
   },
+  transitionConfig: () => ({
+    transitionSpec: {
+      duration: 300,
+      easing: Easing.out(Easing.poly(4)),
+      timing: Animated.timing,
+    },
+    screenInterpolator: sceneProps => {
+      const { layout, position, scene } = sceneProps;
+      const { index } = scene;
+
+      const width = layout.initWidth;
+      const translateX = position.interpolate({
+        inputRange: [index - 1, index, index + 1],
+        outputRange: [width, 0, 0],
+      });
+
+      const opacity = position.interpolate({
+        inputRange: [index - 1, index - 0.99, index],
+        outputRange: [0, 1, 1],
+      });
+
+      return { opacity, transform: [{ translateX }] };
+    },
+  }),
+
 });
-const AppNavigator = createMaterialBottomTabNavigator(  
+TryStack.navigationOptions = ({ navigation }) => {
+  let tabBarVisible = false;
+  let routeName = navigation.state.routes[navigation.state.index].routeName
+  if ( routeName == 'Home_try' ) {
+      tabBarVisible = true
+  }
+  return {
+      tabBarVisible,
+  }
+}
+const AppNavigator = createBottomTabNavigator(  
   {  
       Subscribe: { screen: SubscribeStack,  
           navigationOptions:{  
@@ -83,40 +227,36 @@ const AppNavigator = createMaterialBottomTabNavigator(
               tabBarIcon: ({ tintColor }) => (  
                   <View>  
                       <Icon style={[{color: tintColor}]} size={25} name={'ios-images'}/>  
-                  </View>),  
-              activeColor: '#f60c0d',  
-              inactiveColor: '#f65a22',  
-              barStyle: { backgroundColor: '#f69b31' },  
+                  </View>), 
+              activeColor: '#ebebeb',  
+              inactiveColor: '#0000FF', 
           }  
       },  
       Account: { screen: AccountStack,  
           navigationOptions:{  
-              tabBarLabel:'History',  
+              tabBarLabel:'Account',  
               tabBarIcon: ({ tintColor }) => (  
                   <View>  
                       <Icon style={[{color: tintColor}]} size={25} name={'ios-person'}/>  
                   </View>),  
-              activeColor: '#615af6',  
-              inactiveColor: '#46f6d7',  
-              barStyle: { backgroundColor: '#67baf6' },  
+              activeColor: '#ebebeb',  
+              inactiveColor: '#0000FF',  
           }  
       },  
   },  
   {  
-    initialRouteName: "Subscribe",  
-    activeColor: '#f0edf6',  
-    inactiveColor: '#226557',  
-    barStyle: { backgroundColor: '#3BAD87' },  
+    initialRouteName: "Subscribe",   
+    barStyle: { backgroundColor: '#ebebeb' },  
   },  
 );  
 
 const InitialNavigator = createSwitchNavigator(
   {
-    Splash: Splash,
+    Auth:AuthStack,
     App: AppNavigator,
   },
   {
-    initialRouteName: 'Splash',
+    initialRouteName: 'Auth',
   },
 );
 const AppContainer = createAppContainer(InitialNavigator);
@@ -126,6 +266,7 @@ export default class App extends Component {
   
   async componentDidMount() {
     /* Checking for permissions and creating Notification Listeners */
+    global.user_details ={};
     this.checkPermission();
     this.createNotificationListeners();
     this.createNotificationChannels();

@@ -1,11 +1,11 @@
-var flatListData1 = [
+const flatListData1 = [
     {
-        image: require("./assets/im/c1.png"),
+        image: "uri:https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
         date: "Today, 23 Jan",
         title: "Paneer Pesto Salad"
     },
     {
-        image: require("./assets/im/c2.png"),
+        image: "uri:https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
         date: "Tomorrow, 24 Jan",
         title: "Paneer Pesto Salad"
     },
