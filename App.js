@@ -1,8 +1,9 @@
-import { AsyncStorage , Alert,View,Animated,Easing} from 'react-native';
-import getSlideFromRightTransition from 'react-navigation-slide-from-right-transition';
+import { AsyncStorage , Alert,View,Animated,Easing,Dimensions} from 'react-native';
 import {Icon} from 'native-base';
+import SearchScreen from './src/SearchScreen';
 import firebase from 'react-native-firebase';
 import React ,{Component} from 'react'
+import { createSharedElementStackNavigator } from 'react-navigation-shared-element';
 import RegisterScreen from './src/AuthStack/Screens/RegisterScreen';
 import SplashScreen from './src/AuthStack/Screens/Splash';
 import OtpScreen from './src/AuthStack/Screens/OtpScreen';
@@ -22,10 +23,12 @@ import ACC_HelpDetail from './src/AccountStack/Screens/HelpDetail';
 import ACC_MapScreen from './src/AccountStack/Screens/MapScreen';
 import ACC_EditScreen from './src/AccountStack/Screens/EditScreen';
 import ACC_TempScreen from './src/AccountStack/Screens/tempScreen';
-import ACC_PaytmGateway from './src/AccountStack/Screens/PaytmGateway';
 import { createAppContainer ,createSwitchNavigator} from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import {createBottomTabNavigator} from 'react-navigation-tabs';
+global.width=Dimensions.get('window').width;
+global.width=Dimensions.get('window').height;
+global.Font=''
 const AccountStack = createStackNavigator({
   Temp:ACC_TempScreen,
   Map : ACC_MapScreen,
@@ -38,16 +41,13 @@ const AccountStack = createStackNavigator({
   Payment: ACC_PaymentScreen,
   Help:ACC_HelpScreen,
   HelpDetail:ACC_HelpDetail,
-  Paytm:ACC_PaytmGateway,
   },
   {  initialRouteName: 'Account',
      gesturesEnabled:true,
      headerMode:"none",
      mode: 'card',
      defaultNavigationOptions: {
-     transitionConfig:getSlideFromRightTransition,
      gesturesEnabled: true,
-    },
     transitionConfig: () => ({
       transitionSpec: {
         duration: 300,
@@ -71,7 +71,9 @@ const AccountStack = createStackNavigator({
   
         return { opacity, transform: [{ translateX }] };
       },
+      
     }),
+  },
   }
 );
 AccountStack.navigationOptions = ({ navigation }) => {
@@ -84,14 +86,15 @@ AccountStack.navigationOptions = ({ navigation }) => {
       tabBarVisible,
   }
 }
-const SubscribeStack = createStackNavigator({
+const SubscribeStack = createSharedElementStackNavigator({
+  Search_sub:SearchScreen,
   Home_sub:SUB_HomeScreen,
   Product_sub:SUB_ProductScreen,
   Subscribe_sub:SUB_SubscriptionScreen,
   },
 {
   initialRouteName: 'Home_sub',
-  gesturesEnabled:true,
+  gestureEnabled:true,
   defaultNavigationOptions: {
     headerShown:false,
   },
@@ -139,7 +142,6 @@ const AuthStack = createStackNavigator({
   initialRouteName: 'Splash',
   defaultNavigationOptions: {
     headerShown:false,
-  },
   transitionConfig: () => ({
     transitionSpec: {
       duration: 300,
@@ -164,6 +166,7 @@ const AuthStack = createStackNavigator({
       return { opacity, transform: [{ translateX }] };
     },
   }),
+ },
 });
 const TryStack = createStackNavigator({
   Home_try:TRY_HomeScreen,
@@ -254,6 +257,7 @@ const InitialNavigator = createSwitchNavigator(
   {
     Auth:AuthStack,
     App: AppNavigator,
+    Search:SearchScreen,
   },
   {
     initialRouteName: 'Auth',

@@ -2,63 +2,11 @@ import React, { Component } from 'react';
 import { ImageBackground, ScrollView, View, FlatList,Image,Dimensions,TouchableNativeFeedback} from 'react-native';
 import { Container,Card, CardItem, Thumbnail, Text,Left, Body} from 'native-base';
 import { SliderBox } from "react-native-image-slider-box";
+import { SharedElement } from 'react-navigation-shared-element';
 import ChooseItem from '../Components/ChooseItem';
 import ScheduleItem from '../Components/PLanFlatlistItem'
 import moment from 'moment';
 import flatListData from '../../../flatListData';
-const flatListData1 = [
-  {
-      image: require("../../../assets/im/s1.png"),
-      date: moment().format("YYYY-MM-DD"),
-      title: "Paneer Pesto Salad"
-  },
-  {
-    image: require("../../../assets/im/s1.png"),
-    date: moment().add(1,"days").format("YYYY-MM-DD"),
-    title: "Paneer Pesto Salad"
-  },
-  {
-  image: require("../../../assets/im/s1.png"),
-  date: moment().add(2,"days").format("YYYY-MM-DD"),
-  title: "Paneer Pesto Salad"
-   },
-  {
-      image: require("../../../assets/im/s1.png"),
-      date: moment().add(3,"days").format("YYYY-MM-DD"),
-      title: "Paneer Pesto Salad"
-  },
-  {
-      image:  require("../../../assets/im/s1.png"),
-      date: moment().add(4,"days").format("YYYY-MM-DD"),
-      title: "Paneer Pesto Salad"
-  },
-  {
-    image:  require("../../../assets/im/s1.png"),
-    date: moment().add(5,"days").format("YYYY-MM-DD"),
-    title: "Paneer Pesto Salad"
-}
-];
-
-const PLAN = [
-  { day:1,
-    price:100,
-    discounted:0,
-  },
-  { day:3,
-    price:100,
-    discounted:90,
-  },
-  { day:7,
-    price:100,
-    discounted:60,
-  },
-  { day:30,
-    price:100,
-    discounted:50,
-  },
-
-];
-
 class FlatListItem extends Component{
   render() {
     return(
@@ -77,21 +25,16 @@ class FlatListItem extends Component{
 } 
 export default class Product extends Component {
   constructor(props) {
+    
     super(props);
     let t=moment();
     console.log(t.format('ddd'));
     console.log(t.add(1,"days"));
     this.state = {
       selectedDate: new Date(),
-      entries:flatListData1,
       current_index:0,
-      images: [
-        require('../../../assets/im/s1.png'),
-        require('../../../assets/im/s2.png'),
-        require('../../../assets/im/s3.png'),
-        require('../../../assets/im/s4.png')
-      ],
-      plans:PLAN
+      plans:this.props.navigation.state.params.item.product_subscription_data,
+      visible:true
     };
   }
   onScrollEnd=(e)=>{
@@ -115,11 +58,52 @@ export default class Product extends Component {
   _renderItem({item,index}) {
     return <FlatListItem2 item={item} index={index}/>;
   }
+  handleScroll=(event)=> {
+    if(event.nativeEvent.contentOffset.y>760)
+        this.setState({visible:false});
+    else
+        this.setState({visible:true});
+    //console.log(event.nativeEvent.contentOffset.y);
+   }
     render(){
        const {item} =this.props.navigation.state.params
+       const flatListData1 = [
+        {
+            image: item.product_image2,
+            date: moment().format("YYYY-MM-DD"),
+            title: item.product_name
+        },
+        {
+          image: item.product_image2,
+          date: moment().add(1,"days").format("YYYY-MM-DD"),
+          title: item.product_name
+        },
+        {
+          image: item.product_image2,
+          date: moment().add(2,"days").format("YYYY-MM-DD"),
+          title: item.product_name
+        },
+        {
+          image: item.product_image2,
+          date: moment().add(3,"days").format("YYYY-MM-DD"),
+          title: item.product_name
+        },
+        {
+          image: item.product_image2,
+          date: moment().add(4,"days").format("YYYY-MM-DD"),
+          title: item.product_name
+        },
+        {
+          image: item.product_image2,
+          date: moment().add(5,"days").format("YYYY-MM-DD"),
+          title: item.product_name
+        },
+      ]
         return(
             <View style={{flex:1}}>
-                <ScrollView>
+                <ScrollView
+                 ref={(ref) => { this._scrollREF = ref; }}
+                onMomentumScrollEnd={(event)=>{this.handleScroll(event)}}>
                 <ImageBackground source={{uri:item.product_image1}} style={{height: 200, width: null, flex: 1}}/>
                  <Card style={{width:'95%',marginTop:-40,alignSelf:'center'}}>
                   <CardItem> 
@@ -132,7 +116,7 @@ export default class Product extends Component {
                    </Left>
                  </CardItem>
                   <CardItem >
-                    <Text>{item.product_description}</Text>
+                    <Text numberOfLines={3}>{item.product_description}</Text>
                   </CardItem>
                  </Card>
                
@@ -146,7 +130,7 @@ export default class Product extends Component {
                     horizontal={true}
                     ref={(ref) => { this.Date_ListRef = ref; }}
                     pagingEnabled
-                    data={this.state.entries}
+                    data={flatListData1}
                     showsHorizontalScrollIndicator={false}
                     keyExtractor={({item,index})=>{return index}}
                     renderItem={({ item, index})=>{
@@ -168,7 +152,7 @@ export default class Product extends Component {
                     horizontal={true}
                     pagingEnabled={true}
                     onMomentumScrollEnd={this.onScrollEnd}
-                    data={this.state.entries}
+                    data={flatListData1}
                     showsHorizontalScrollIndicator={false}
                     keyExtractor={({item,index})=>{return index}}
                     renderItem={({ item, index})=>{
@@ -180,17 +164,15 @@ export default class Product extends Component {
                 <View style={{backgroundColor: '#fff',padding:15}}>
                   <Text style= {{ fontSize: 22,fontWeight: 'bold'}}>Description</Text>
                   <View style={{height: 3, width: 50,backgroundColor: '#e65100' }}></View>
-                  <Text style={{color: '#616161',marginBottom:10}}>{item.product_description}</Text>
+                  <Text numberOfLines={4} style={{color: '#616161',marginBottom:10}}>{item.product_chef_data[0].chef_description}</Text>
                   <View style={{height:200}}>
                   <SliderBox
-                       
                        images={[item.product_image1,item.product_image2,item.product_image3]}
                        onCurrentImagePressed={index =>
                         console.warn(`image ${index} pressed`)
                         }/>
         
                   </View>
-                   <Text style={{color: '#616161',marginVertical:10}}>{item.product_description}</Text>
                   </View>
                  <View style={{ backgroundColor: '#fff', height: 250,backgroundColor: '#eeeeee',padding:10}}>
                  <Text style={{fontSize: 22,fontWeight: 'bold',backgroundColor: '#eeeeee'}} > Most Flexible Plan Ever </Text>
@@ -211,9 +193,16 @@ export default class Product extends Component {
                  <View style={{backgroundColor: '#fff',backgroundColor: '#eeeeee',padding:10}}> 
                  <Text style={{fontSize: 22,fontWeight: 'bold',backgroundColor: '#eeeeee'}} > Choose your Plan</Text>
                  <View style={{height: 3, width: 80,backgroundColor: '#e65100',marginBottom:10 }}></View>
-                 {this.state.plans.map((x)=>{return <ChooseItem {...this.props} item={x} product={item}/>})}
+                 {this.state.plans.map((x)=>{return <ChooseItem {...this.props} item={item} plan={x}/>})}
                  </View>
                 </ScrollView>
+                {this.state.visible&&<TouchableNativeFeedback style={{marginVertical:20,marginHorizontal:10}}  onPress={()=>{
+                  this.setState({visible:false});
+                  this._scrollREF.scrollToEnd();}}>
+                <View style={{backgroundColor:'#e65100',alignItems:'center',justifyContent:'center',padding:10,position:'absolute',bottom:0,left:0,right:0}}>
+                    <Text style={{fontSize:22,color:'white',textAlign:'center',textAlignVertical:'center'}}>Choose Plan</Text>
+                </View>
+                </TouchableNativeFeedback>}
                 </View>
         )
     }

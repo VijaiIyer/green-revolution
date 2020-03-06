@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Image, StyleSheet, Dimensions,FlatList} from 'react-native';
 const { width } = Dimensions.get('window');
-const height = width * 0.7;
+const height = width * 0.5;
 
 export default class Carousel extends Component {
   render() {
@@ -24,18 +24,18 @@ export default class Carousel extends Component {
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    height,
+    height:height,
   },
   image_container:{
-    width:width,
+    width:width*0.8,
     height:height,
     justifyContent:'center',
     alignItems:'center'
   },
   image: {
-    width:0.9*width,
-    height:0.8*height,
-    borderRadius:5,
+    width:0.75*width,
+    height:0.75*height,
+    borderRadius:15,
     borderBottomColor:'gray',
   },
 });

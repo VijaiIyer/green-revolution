@@ -14,7 +14,7 @@ export default class  FlatlistItem extends Component{
           <View style={{width:width,padding:10}}>
             <Card style={{padding:5}}>
             <CardItem cardBody>
-              <Image source={this.props.item.image} style={{height: 200, width: null, flex: 1}}/>
+              <Image source={{uri:this.props.item.image}} style={{height: 200, width: null, flex: 1}}/>
             </CardItem>
             <CardItem>
               <Body>
@@ -24,13 +24,6 @@ export default class  FlatlistItem extends Component{
             </CardItem>
           </Card>
           </View>
-              // <View style={{width:width,padding:30,justifyContent:'center',alignItems:'center',backgroundColor:'red',borderColor:'black',margin:6,borderWidth:2}}>
-              //  <View style={{width:300,height:200}}>
-              //   <Image source={this.props.item.image} style={{width: '100%', height:130 }}></Image>
-              //   <Text note style={{fontSize: 15, fontWeight: 'bold', color: '#757575'}}>{item.date}</Text>
-              //   <Text style={{  fontSize: 20,fontWeight: 'bold' }}>{item.title}</Text>
-              //  </View>
-              //  </View>
         );
     }
 }

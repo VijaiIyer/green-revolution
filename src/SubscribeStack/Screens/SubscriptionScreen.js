@@ -1,10 +1,10 @@
 import React, {Component}  from 'react';
-import { TouchableNativeFeedback,StyleSheet, Text, View, ScrollView,Image,ImageBackground,CheckBox,Alert} from 'react-native';
-import {Card, CardItem, Body } from 'native-base';
+import { TouchableNativeFeedback,StyleSheet, Text, View, ScrollView,Image,ImageBackground,CheckBox,Alert, PickerIOSItem} from 'react-native';
+import {Card, CardItem, Body, Icon, Picker, Form } from 'native-base';
 import Modal from "react-native-modal";
+import axios from 'axios';
 import SlotItem from '../Components/SlotItem'
 import DateModal from '../Components/DateModal'
-const def=[false,false,false,false]
 export default class App extends Component {
   constructor(props)
   {
@@ -12,11 +12,28 @@ export default class App extends Component {
     this.state={
       pressed:[true,false,false,false],
       isModalVisible: false,
+      slots:[],
     }
+    //this.slots=[];
   }
-  getListViewItem = (item) => {  
-    Alert.alert(item.key);  
-   }
+  componentDidMount(){
+    const {item}=this.props.navigation.state.params;
+ fetch('https://www.bookshippingtrucks.com/Projects-Works/SALAD-APP/MOBILE_APP/_Api_Timing_Slots_Data.php', {
+  method: 'POST',
+  body: JSON.stringify({
+    method:"Timing_Slots",
+    category_id:`${item.product_category_id}`,
+  }),
+}).then((response) => response.json())
+    .then((responseJson) => {
+      console.log(responseJson);
+      this.setState({slots:responseJson.result});
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  }
   updatePressed=(index)=>{
     let t=[false,false,false,false];
     this.setState({pressed:t});
@@ -29,7 +46,7 @@ export default class App extends Component {
     this.setState({ isModalVisible: !this.state.isModalVisible });
   };
 render(){
-  const {product,item}=this.props.navigation.state.params
+  const {plan,item}=this.props.navigation.state.params
     return(
             <View>
                 <ScrollView style={{height: '100%', backgroundColor: '#eeeeee' }}>
@@ -38,21 +55,21 @@ render(){
                             <CardItem bordered> 
                               <Body>
                               <View>
-                                <Text style={{fontSize: 22,fontWeight: 'bold'}}>Greek Salad</Text>
-                                <Text note style={{fontSize: 15, color: '#757575'}}>With halwa</Text>
-                                <Text note style={{fontSize: 15, color: '#757575'}}>By Chef Gaurav Sharma(Mitchelin 3 star)</Text>
+                                <Text style={{fontSize: 22,fontWeight: 'bold'}}>{item.product_name}</Text>
+                                <Text note style={{fontSize: 15, color: '#757575'}}>With {item.dressing_name}</Text>
+                                <Text note style={{fontSize: 15, color: '#757575'}}>By Chef {item.product_chef_data[0].chef_name}</Text>
                               </View>
                              </Body>
                             </CardItem>
                             <CardItem>
                             <Body style={{flexDirection:"row",justifyContent:'space-between',paddingHorizontal:10,paddingVertical:5}}>
                               <View>
-                              <Text style={{color:'#bbbbbb',textAlignVertical:'center'}}>3 days</Text>
-                              <Text><Text style={{fontSize:20,fontWeight:'bold'}}>60.00</Text><Text>/meal</Text></Text>
+                              <Text style={{color:'#bbbbbb',textAlignVertical:'center'}}>{plan.subscription_days} Days</Text>
+                              <Text><Text style={{fontSize:20,fontWeight:'bold'}}>{plan.subscription_price}</Text><Text>/meal</Text></Text>
                               </View>
                               <View  style={{alignItems:'flex-end'}}>
                               <Text>Total</Text>
-                              <Text><Text style={{fontSize:20,fontWeight:'bold'}}>180.00</Text></Text>
+                              <Text><Text style={{fontSize:20,fontWeight:'bold'}}>{plan.subscription_days*plan.subscription_price}</Text></Text>
                               </View>
                             </Body>
                             </CardItem>
@@ -70,14 +87,6 @@ render(){
                                    </View>
                               </TouchableNativeFeedback>
                             </CardItem>
-                            <CardItem footer bordered>
-                            <TouchableNativeFeedback>
-                             <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',flex:1}}>
-                              <Text note style= {{ fontSize: 18}}>Deliver on Sat and Sun</Text>
-                              <CheckBox/>
-                              </View>
-                              </TouchableNativeFeedback>
-                           </CardItem>
                        </Card>
                        <View style={{marginVertical:10}}>
                        <Text style= {{ fontSize: 22,fontWeight: 'bold'}}> Select Delivery Slot</Text>
@@ -85,15 +94,14 @@ render(){
                        </View>
                        <View style={{width:'100%'}}>
                             <View style={{flex:1,flexDirection:'row', justifyContent:'space-around'}}> 
-                               <SlotItem pressed={this.state.pressed[0]} index={0} time={'1:00-2:20 pm'} updatePressed={this.updatePressed}/>
-                               <SlotItem pressed={this.state.pressed[1]} index={1} time={'11:00-2:20 pm'} updatePressed={this.updatePressed}/>
+                               <SlotItem pressed={this.state.pressed[0]} index={0} slot={this.state.slots[0]} updatePressed={this.updatePressed}/>
+                               <SlotItem pressed={this.state.pressed[1]} index={1} slot={this.state.slots[1]}  updatePressed={this.updatePressed}/>
                             </View>
                       <View style={{flex:1,flexDirection:'row',justifyContent:'space-around'}}>
-                       <SlotItem pressed={this.state.pressed[2]} index={2} time={'1:00-2:20 pm'} updatePressed={this.updatePressed}/>
-                       <SlotItem pressed={this.state.pressed[3]} index={3}  time={'11:00-2:20 pm'} updatePressed={this.updatePressed}/>
+                            <SlotItem pressed={this.state.pressed[2]} index={2} slot={this.state.slots[2]}  updatePressed={this.updatePressed}/>
+                            <SlotItem pressed={this.state.pressed[3]} index={3} slot={this.state.slots[3]}  updatePressed={this.updatePressed}/>
                        </View>
                        </View>
-                     
                       </View> 
        <View style={{marginVertical:10}}>              
        <TouchableNativeFeedback>
@@ -107,16 +115,22 @@ render(){
        <View style={{backgroundColor: '#fff'}}>
        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',padding:5,margin:10}}>
        <Text style= {{ fontSize: 17}}> Item Total </Text>
-       <Text style= {{ fontSize: 17}}> ₹ 100.00 </Text>
+       <Text style= {{ fontSize: 17}}> ₹ {plan.subscription_days*plan.subscription_price}</Text>
        </View>
        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',padding:5,margin:10}}>
        <Text style= {{ color: '#e65100',fontSize: 18,fontWeight: 'bold'}}>Delivery Charges </Text>
-       <Text style= {{ color: '#e65100',fontWeight: 'bold',fontSize: 18}}> FREE</Text>
+       <Text style= {{ color: '#e65100',fontWeight: 'bold',fontSize: 18}}> ₹ {10}</Text>
        </View>
        <View style={{marginLeft:10,height: 1, width: '95%', backgroundColor: '#e65100' }}></View>
        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',padding:5,margin:10}}>
        <Text style= {{ color: 'black',fontSize: 18,fontWeight: 'bold'}}>Total </Text>
-       <Text style= {{ color: 'black',fontWeight: 'bold',fontSize: 18}}> ₹ 100.00 </Text>
+       <Text style= {{ color: 'black',fontWeight: 'bold',fontSize: 18}}> ₹ {plan.subscription_days*plan.subscription_price+10} </Text>
+       </View>
+       </View>
+       <View>
+       <View style={{marginBottom:10}}>
+                       <Text style= {{ fontSize: 22,fontWeight: 'bold'}}> Select Payment Option</Text>
+                       <View style={{height: 2, width: 80,marginLeft:5, backgroundColor: '#e65100' }}/>
        </View>
        </View>
        </ScrollView>

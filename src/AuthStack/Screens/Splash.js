@@ -19,13 +19,15 @@ export default class Splash extends Component {
     axios.post('https://www.bookshippingtrucks.com/Projects-Works/SALAD-APP/MOBILE_APP/_Api_Register_Log.php', {
       "method":"Web_User_Login",
       "mobile":this.state.mobile,
+      "password":this.state.password,
     })
     .then((response) => {
       if(response.data.message==='Success')
       {
-        console.log(response.data.result[0]);
-        global.user_detail=response.data.result[0];
-        this.props.navigation.navigate('App');
+         console.log(response.data.result[0]);
+         global.user_detail=response.data.result[0];
+         AsyncStorage.setItem('User_details',JSON.stringify(global.user_detail));
+         this.props.navigation.navigate('App');
       }
       else
       {
@@ -36,19 +38,16 @@ export default class Splash extends Component {
       console.log(error);
     });
   }
-    performTimeConsumingTask = async () => {
-        return new Promise(resolve =>
-          setTimeout(() => {
-            resolve('result');
-          }, 3000),
-        );
-      };
       async componentDidMount()
       {
-        const data = await this.performTimeConsumingTask();
-        if (data !== null) {
-         // this.props.navigation.navigate('App');
-        }
+        AsyncStorage.getItem('User_details')
+        .then((value)=>{
+          if(value!==null)
+          {
+            global.user_detail=JSON.parse(value);
+            this.props.navigation.navigate('App');
+          }
+        })
       }
   render(){
     const translate = {

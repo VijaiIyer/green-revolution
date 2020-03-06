@@ -15,7 +15,7 @@ export default class AddressScreen extends Component {
         this.delete_Address = this.delete_Address.bind(this);
     }
     
-    edit_Address=(address)=>{
+    edit_Address=(address,index)=>{
       var temp=address;
       temp.name=global.user_detail.name;
       temp.mobile=global.user_detail.contact;
@@ -38,7 +38,11 @@ export default class AddressScreen extends Component {
       .then((response) => {
         console.log(response.data);
         if(response.data.status==='200')
-          ToastAndroid.show('Address Updated Successfully', ToastAndroid.SHORT);
+          {ToastAndroid.show('Address Updated Successfully', ToastAndroid.SHORT);
+          let t=this.state.Address_array;
+          t[index]=address;
+          this.setState({Address_array:t});
+          }
         else
           ToastAndroid.show('Address Update Failed', ToastAndroid.SHORT);
       }, (error) => {
@@ -71,7 +75,11 @@ export default class AddressScreen extends Component {
       .then((response) => {
         //console.log(response.data);
         if(response.data.status==='200')
-          ToastAndroid.show('Addresses Added Successfully', ToastAndroid.SHORT);
+          {ToastAndroid.show('Addresses Added Successfully', ToastAndroid.SHORT);
+          let t=this.state.Address_array;
+          t.push(address);
+          this.setState({Address_array:t});
+          }
         else
           ToastAndroid.show('Addresses Already Exists', ToastAndroid.SHORT);
       }, (error) => {
@@ -88,7 +96,13 @@ export default class AddressScreen extends Component {
       .then((response) => {
         console.log(response.data);
         if(response.data.status==='200')
-          ToastAndroid.show('Deleted Successfully', ToastAndroid.SHORT);
+         { ToastAndroid.show('Deleted Successfully', ToastAndroid.SHORT);
+         let t=this.state.Address_array;
+         t=t.filter((item)=>{ 
+        return !(Object.is(address,item));
+      });
+      this.setState({Address_array:t});
+         }
         else
           ToastAndroid.show('Some Error Occurred', ToastAndroid.SHORT);
       }, (error) => {

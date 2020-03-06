@@ -272,6 +272,7 @@ export default class MapScreen extends Component {
               <TouchableNativeFeedback
                 onPress={()=>{
                   let temp=this.item;
+                  const index=this.props.navigation.state.params.index
                   let save='';
                   if(this.state.name==='Home')
                     save='1';
@@ -284,7 +285,7 @@ export default class MapScreen extends Component {
                     temp.landmark=this.state.landmark;
                     temp.location=this.state.userLocation;
                     console.log(temp);
-                  this.props.navigation.state.params.edit_Address(temp);
+                  this.props.navigation.state.params.edit_Address(temp,index);
                   this.props.navigation.goBack();}}
               >
               <View style={{backgroundColor:'orange',width:'100%',margin:20,alignItems:"center",padding:10,alignSelf:'center'}}>
